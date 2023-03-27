@@ -1,9 +1,18 @@
 package br.com.fiap.spotfilho.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "TB_ESTILO", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_NM_ESTILO", columnNames = "NM_ESTILO")
+})
 public class Estilo {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_ESTILO")
+    @SequenceGenerator(name = "SQ_ESTILO", sequenceName = "SQ_ESTILO")
+    @Column(name = "ID_ESTILO")
     private long id;
-
+    @Column(name = "NM_ESTILO")
     private String nome;
 
 

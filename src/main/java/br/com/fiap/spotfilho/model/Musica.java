@@ -1,17 +1,37 @@
 package br.com.fiap.spotfilho.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalTime;
 
+
+@Entity
+@Table(name = "TB_MUSICA")
 public class Musica {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_MUSICA")
+    @SequenceGenerator(name = "SQ_MUSICA", sequenceName = "SQ_MUSICA")
+    @Column(name = "ID_MUSICA")
     private long id;
 
+    @Column(name = "NM_MUSICA")
     private String nome;
 
+    @Temporal(TemporalType.TIME)
+    @Column(name = "DURACAO")
     private LocalTime duracao;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "ID_ARTISTA", referencedColumnName = "ID_ARTISTA",
+            foreignKey = @ForeignKey(name = "FK_MUSICA_ARTISTA", value = ConstraintMode.CONSTRAINT)
+    )
     private Artista artista;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "ID_ESTILO", referencedColumnName = "ID_ESTILO",
+            foreignKey = @ForeignKey(name = "FK_MUSICA_ESTILO", value = ConstraintMode.CONSTRAINT)
+    )
     private Estilo estilo;
 
 

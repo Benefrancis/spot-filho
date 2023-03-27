@@ -1,11 +1,20 @@
 package br.com.fiap.spotfilho.model;
 
-public class Artista {
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "TB_ARTISTA", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_NM_ARTISTA", columnNames = "NM_ARTISTA")
+})
+public class Artista {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_ARTISTA")
+    @SequenceGenerator(name = "SQ_ARTISTA", sequenceName = "SQ_ARTISTA")
+    @Column(name = "ID_ARTISTA")
     private long id;
 
+    @Column(name = "NM_ARTISTA")
     private String nome;
-
 
     public Artista() {
     }
