@@ -1,17 +1,21 @@
 package br.com.fiap.spotfilho.model;
 
 import jakarta.persistence.*;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+
+import java.io.IOException;
 
 @Entity
-@Table(name = "TB_ESTILO", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_NM_ESTILO", columnNames = "NM_ESTILO")
-})
+@Table(name = "TB_ESTILO")
 public class Estilo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_ESTILO")
     @SequenceGenerator(name = "SQ_ESTILO", sequenceName = "SQ_ESTILO")
     @Column(name = "ID_ESTILO")
     private long id;
+
     @Column(name = "NM_ESTILO")
     private String nome;
 
@@ -44,10 +48,20 @@ public class Estilo {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Estilo{");
-        sb.append("id=").append(id);
-        sb.append(", nome='").append(nome).append('\'');
-        sb.append('}');
-        return sb.toString();
+        ObjectMapper mapper = new ObjectMapper();
+        //By default all fields without explicit view definition are included, disable this
+        mapper.configure(SerializationConfig.Feature.DEFAULT_VIEW_INCLUSION, false);
+
+
+        //display name only
+        String jsonInString = null;
+        try {
+            jsonInString = mapper.writeValueAsString(this);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonInString;
+
     }
 }

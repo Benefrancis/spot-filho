@@ -1,8 +1,13 @@
 package br.com.fiap.spotfilho.model;
 
 import jakarta.persistence.*;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 
+import java.io.IOException;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -22,11 +27,10 @@ public class Musica {
     @Column(name = "DURACAO")
     private LocalTime duracao;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "ID_ARTISTA", referencedColumnName = "ID_ARTISTA",
-            foreignKey = @ForeignKey(name = "FK_MUSICA_ARTISTA", value = ConstraintMode.CONSTRAINT)
-    )
-    private Artista artista;
+
+    @ManyToMany(mappedBy = "musicas")
+    @OrderBy("nome DESC")
+    private Set<Artista> artistas = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JoinColumn(name = "ID_ESTILO", referencedColumnName = "ID_ESTILO",
@@ -38,12 +42,22 @@ public class Musica {
     public Musica() {
     }
 
-    public Musica(long id, String nome, LocalTime duracao, Artista artista, Estilo estilo) {
+    public Musica(long id, String nome, LocalTime duracao, Set<Artista> artistas, Estilo estilo) {
         this.id = id;
         this.nome = nome;
         this.duracao = duracao;
-        this.artista = artista;
+        this.artistas = artistas;
         this.estilo = estilo;
+    }
+
+
+    public Set<Artista> getArtistas() {
+        return artistas;
+    }
+
+    public Musica setArtistas(Set<Artista> artistas) {
+        this.artistas = artistas;
+        return this;
     }
 
     public long getId() {
@@ -73,15 +87,6 @@ public class Musica {
         return this;
     }
 
-    public Artista getArtista() {
-        return artista;
-    }
-
-    public Musica setArtista(Artista artista) {
-        this.artista = artista;
-        return this;
-    }
-
     public Estilo getEstilo() {
         return estilo;
     }
@@ -93,13 +98,20 @@ public class Musica {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Musica{");
-        sb.append("id=").append(id);
-        sb.append(", nome='").append(nome).append('\'');
-        sb.append(", duracao=").append(duracao);
-        sb.append(", artista=").append(artista);
-        sb.append(", estilo=").append(estilo);
-        sb.append('}');
-        return sb.toString();
+        ObjectMapper mapper = new ObjectMapper();
+        //By default all fields without explicit view definition are included, disable this
+        mapper.configure(SerializationConfig.Feature.DEFAULT_VIEW_INCLUSION, false);
+
+
+        //display name only
+        String jsonInString = null;
+        try {
+            jsonInString = mapper.writeValueAsString(this);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonInString;
+
     }
 }
